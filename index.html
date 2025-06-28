@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="media-playback" content="autoplay">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0a0a18">
+    <title>Nexus Radio | Global FM Experience</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Splash screen styles */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0c0c1e 0%, #1a1a3d 50%, #2a0b45 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 1s ease;
+        }
+        
+        .splash-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .logo-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .logo-base {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(25,25,40,0.8) 0%, rgba(10,10,24,0.9) 70%);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 50px rgba(0, 242, 254, 0.2),
+                        inset 0 0 30px rgba(92, 175, 252, 0.3);
+            border: 1px solid rgba(92, 175, 252, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+        
+        .globe {
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #00f2fe, #4facfe);
+            box-shadow: 0 0 40px rgba(0, 242, 254, 0.4),
+                        inset 0 0 30px rgba(0, 0, 0, 0.4);
+            z-index: 3;
+        }
+        
+        .grid-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            z-index: 4;
+        }
+        
+        .grid-line {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.15);
+            transform-origin: center;
+        }
+        
+        .wave {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid;
+            animation: pulse 6s infinite ease-in-out;
+        }
+        
+        .wave-1 {
+            width: 250px;
+            height: 250px;
+            border-color: rgba(0, 242, 254, 0.3);
+            animation-delay: 0s;
+        }
+        
+        .wave-2 {
+            width: 280px;
+            height: 280px;
+            border-color: rgba(79, 172, 254, 0.25);
+            animation-delay: -1.5s;
+        }
+        
+        .wave-3 {
+            width: 310px;
+            height: 310px;
+            border-color: rgba(255, 0, 170, 0.2);
+            animation-delay: -3s;
+        }
+        
+        .n-letter {
+            position: absolute;
+            width: 70px;
+            height: 130px;
+            z-index: 5;
+        }
+        
+        .n-bar {
+            position: absolute;
+            background: linear-gradient(to bottom, #00f2fe, #4facfe);
+            width: 18px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.7);
+        }
+        
+        .n-left {
+            height: 130px;
+            left: 0;
+        }
+        
+        .n-right {
+            height: 130px;
+            right: 0;
+        }
+        
+        .n-middle {
+            height: 130px;
+            width: 18px;
+            left: 26px;
+            transform: rotate(30deg);
+            transform-origin: bottom center;
+        }
+        
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, #00f2fe, transparent);
+            opacity: 0.3;
+            filter: blur(3px);
+            animation: float 12s infinite ease-in-out;
+        }
+        
+        .logo-title {
+            font-size: 42px;
+            font-weight: 700;
+            background: linear-gradient(to right, #00f2fe, #4facfe, #ff00aa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+        
+        .loading-bar {
+            width: 300px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .loading-progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #00f2fe, #4facfe);
+            border-radius: 4px;
+            transition: width 5s linear;
+        }
+        
+        /* Main app styles */
+        .app-container {
+            display: none;
+            max-width: 500px;
+            margin: 0 auto;
+            min-height: 100vh;
+            flex-direction: column;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            background: rgba(10, 10, 24, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        
+        body.light-theme .app-container {
+            background: rgba(240, 245, 255, 0.7);
+        }
+        
+        /* Rest of app styles from previous implementation */
+        :root {
+            --primary-accent: #00f2fe;
+            --secondary-accent: #4facfe;
+            --tertiary-accent: #ff00aa;
+            --bg-dark: #0a0a18;
+            --bg-darker: #050510;
+            --card-dark: rgba(25, 25, 40, 0.6);
+            --card-light: rgba(255, 255, 255, 0.85);
+            --text-dark: #ffffff;
+            --text-light: #333333;
+            --border-dark: rgba(92, 175, 252, 0.3);
+            --border-light: rgba(0, 102, 255, 0.2);
+            --success: #00e676;
+            --warning: #ff9100;
+            --error: #ff5252;
+            
+            --primary: var(--primary-accent);
+            --secondary: var(--secondary-accent);
+            --bg: var(--bg-dark);
+            --card: var(--card-dark);
+            --text: var(--text-dark);
+            --border: var(--border-dark);
+            --glow: 0 0 15px rgba(0, 242, 254, 0.5);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            font-family: 'Exo 2', sans-serif;
+            transition: background 0.5s ease;
+        }
+
+        body.light-theme {
+            --bg: #f0f5ff;
+            --card: var(--card-light);
+            --text: var(--text-light);
+            --border: var(--border-light);
+            --glow: 0 0 15px rgba(0, 102, 255, 0.3);
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+            overflow: hidden;
+        }
+
+        .app-header {
+            padding: 30px 20px 15px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .app-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, var(--primary), var(--secondary), var(--tertiary-accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: var(--glow);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .control-btn {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+            box-shadow: var(--glow);
+        }
+
+        .control-btn:hover::before {
+            opacity: 0.3;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-bar {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 30px;
+            padding: 15px 20px 15px 50px;
+            width: 100%;
+            color: var(--text);
+            font-size: 16px;
+            font-family: 'Exo 2', sans-serif;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-bar:focus {
+            outline: none;
+            box-shadow: var(--glow);
+            border-color: var(--primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
+            opacity: 0.7;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-tab {
+            padding: 10px 0;
+            cursor: pointer;
+            position: relative;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            opacity: 1;
+            color: var(--primary);
+        }
+
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .page {
+            display: none;
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-section {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .welcome-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-text {
+            margin-bottom: 25px;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        .featured-stations {
+            margin-top: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .stations-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .station-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .station-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glow);
+            border-color: var(--primary);
+        }
+
+        .station-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 24px;
+            color: white;
+        }
+
+        .station-name {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .station-country {
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .countries-list {
+            margin-top: 20px;
+        }
+
+        .country-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .country-item:hover {
+            transform: translateX(5px);
+            border-color: var(--primary);
+        }
+
+        .country-flag {
+            width: 50px;
+            height: 35px;
+            border-radius: 8px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .country-info {
+            flex: 1;
+        }
+
+        .country-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .station-count {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .player-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(10, 10, 24, 0.95), transparent);
+            padding: 20px;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+
+        .player-inner {
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            padding: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .station-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .station-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .station-details {
+            flex: 1;
+        }
+
+        .station-title {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .station-location {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .player-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .control-btn-lg {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: var(--glow);
+            transition: all 0.3s ease;
+        }
+
+        .control-btn-lg:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.8);
+        }
+
+        .visualizer {
+            height: 50px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 3px;
+            margin: 15px 0;
+        }
+
+        .visualizer-bar {
+            width: 4px;
+            background: linear-gradient(to top, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .settings-section {
+            margin-bottom: 30px;
+        }
+
+        .settings-title {
+            font-size: 22px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-option {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .option-info {
+            flex: 1;
+        }
+
+        .option-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .option-desc {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .theme-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            cursor: pointer;
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: var(--primary);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        body.light-theme .theme-toggle::before {
+            transform: translateX(30px);
+        }
+
+        .language-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 15px;
+            color: var(--text);
+            font-family: 'Exo 2', sans-serif;
+            width: 150px;
+        }
+
+        /* Licensing and Policy Pages */
+        .policy-container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .policy-container h2 {
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .policy-container h3 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Audio license notice */
+        .license-notice {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.95);
+                opacity: 0.6;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .app-container {
+                max-width: 100%;
+            }
+            
+            .app-title {
+                font-size: 26px;
+            }
+            
+            .stations-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash screen -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="logo-container">
+            <div class="particles" id="particles"></div>
+            
+            <div class="wave wave-1"></div>
+            <div class="wave wave-2"></div>
+            <div class="wave wave-3"></div>
+            
+            <div class="logo">
+                <div class="logo-base">
+                    <div class="globe">
+                        <div class="grid-lines" id="grid-lines"></div>
+                    </div>
+                    <div class="n-letter">
+                        <div class="n-bar n-left"></div>
+                        <div class="n-bar n-middle"></div>
+                        <div class="n-bar n-right"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h1 class="logo-title">NEXUS RADIO</h1>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+    </div>
+    
+    <!-- Main app container -->
+    <div class="app-container" id="appContainer">
+        <!-- Background with futuristic elements -->
+        <div class="background" id="background"></div>
+        
+        <!-- App Header -->
+        <div class="app-header">
+            <div class="header-top">
+                <div class="app-title">NEXUS RADIO</div>
+                <div class="header-controls">
+                    <button class="control-btn" id="favoriteBtn">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <button class="control-btn" id="themeBtn">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-bar" placeholder="Search global stations...">
+            </div>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-page="home"><i class="fas fa-home"></i> Home</div>
+            <div class="nav-tab" data-page="explore"><i class="fas fa-globe-americas"></i> Explore</div>
+            <div class="nav-tab" data-page="favorites"><i class="fas fa-star"></i> Favorites</div>
+            <div class="nav-tab" data-page="settings"><i class="fas fa-cog"></i> Settings</div>
+            <div class="nav-tab" data-page="policy"><i class="fas fa-file-alt"></i> Policy</div>
+        </div>
+        
+        <!-- Pages -->
+        <div class="page active" id="home-page">
+            <div class="welcome-section">
+                <div class="welcome-title">Global Radio Experience</div>
+                <div class="welcome-text">Discover thousands of radio stations from around the world. Listen to music, news, and culture from every corner of the globe.</div>
+                <div class="control-btn-lg floating" style="margin: 0 auto;">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            
+            <div class="featured-stations">
+                <div class="section-title">
+                    <i class="fas fa-fire"></i> Trending Stations
+                </div>
+                <div class="stations-grid">
+                    <div class="station-card">
+                        <div class="station-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="station-name">Cool FM Nigeria</div>
+                        <div class="station-country">Nigeria</div>
+                    </div>
+                    <div class="station-card">
+                        <div class="station-icon">
+                            <i class="fas fa-headphones"></i>
+                        </div>
+                        <div class="station-name">Tokyo FM</div>
+                        <div class="station-country">Japan</div>
+                    </div>
+                    <div class="station-card">
+                        <div class="station-icon">
+                            <i class="fas fa-microphone-alt"></i>
+                        </div>
+                        <div class="station-name">Berlin Talk</div>
+                        <div class="station-country">Germany</div>
+                    </div>
+                    <div class="station-card">
+                        <div class="station-icon">
+                            <i class="fas fa-compact-disc"></i>
+                        </div>
+                        <div class="station-name">Paris Lounge</div>
+                        <div class="station-country">France</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="license-notice">
+                <i class="fas fa-info-circle"></i> All radio streams are licensed for public broadcast. Our platform complies with international copyright regulations.
+            </div>
+        </div>
+        
+        <div class="page" id="explore-page">
+            <div class="section-title">
+                <i class="fas fa-globe"></i> Countries & Regions
+            </div>
+            <div class="countries-list" id="countries-list">
+                <!-- Countries will be populated here -->
+            </div>
+        </div>
+        
+        <div class="page" id="favorites-page">
+            <div class="welcome-section">
+                <div class="section-title">
+                    <i class="fas fa-star"></i> Favorite Stations
+                </div>
+                <div id="favorites-list">
+                    <div class="welcome-text" style="text-align: center;">You haven't added any favorites yet. Start exploring and add your favorite stations!</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="page" id="settings-page">
+            <div class="settings-section">
+                <div class="settings-title">
+                    <i class="fas fa-palette"></i> Appearance
+                </div>
+                <div class="settings-option">
+                    <div class="option-info">
+                        <div class="option-name">Theme</div>
+                        <div class="option-desc">Switch between light and dark mode</div>
+                    </div>
+                    <div class="theme-toggle" id="themeToggle"></div>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <div class="settings-title">
+                    <i class="fas fa-language"></i> Language
+                </div>
+                <div class="settings-option">
+                    <div class="option-info">
+                        <div class="option-name">App Language</div>
+                        <div class="option-desc">Select your preferred language</div>
+                    </div>
+                    <select class="language-select" id="languageSelect">
+                        <option>English</option>
+                        <option>Español</option>
+                        <option>Français</option>
+                        <option>Deutsch</option>
+                        <option>日本語</option>
+                        <option>中文</option>
+                        <option>Hausa</option>
+                        <option>Yoruba</option>
+                        <option>Igbo</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <div class="settings-title">
+                    <i class="fas fa-sliders-h"></i> Audio Settings
+                </div>
+                <div class="settings-option">
+                    <div class="option-info">
+                        <div class="option-name">Audio Quality</div>
+                        <div class="option-desc">Adjust streaming quality</div>
+                    </div>
+                    <select class="language-select">
+                        <option>High (128kbps)</option>
+                        <option>Medium (64kbps)</option>
+                        <option>Low (32kbps)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Privacy Policy Page -->
+        <div class="page" id="policy-page">
+            <div class="policy-container">
+                <a href="#" class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Back to App</a>
+                
+                <h1>Privacy Policy & Licensing</h1>
+                
+                <div class="license-notice">
+                    <i class="fas fa-broadcast-tower"></i> All radio streams are properly licensed for public broadcast through our partnerships with international broadcasting organizations.
+                </div>
+                
+                <h2>Privacy Policy</h2>
+                <p>Last updated: October 15, 2023</p>
+                
+                <h3>1. Introduction</h3>
+                <p>Nexus Radio ("us", "we", or "our") operates the Nexus Radio mobile application (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service.</p>
+                
+                <h3>2. Information Collection and Use</h3>
+                <p>We do not collect any personally identifiable information. The app does not require registration and does not track your listening habits.</p>
+                
+                <h3>3. Log Data</h3>
+                <p>We may collect anonymous usage data to improve our Service. This Log Data may include information such as your device Internet Protocol ("IP") address, device type, and app usage statistics.</p>
+                
+                <h3>4. Cookies</h3>
+                <p>We do not use cookies or similar tracking technologies.</p>
+                
+                <h3>5. Service Providers</h3>
+                <p>We may employ third-party companies to facilitate our Service ("Service Providers"). These third parties have access to anonymous usage data only to perform these tasks on our behalf.</p>
+                
+                <h3>6. Children's Privacy</h3>
+                <p>Our Service does not address anyone under the age of 13 ("Children"). We do not knowingly collect personally identifiable information from anyone under the age of 13.</p>
+                
+                <h3>7. Changes to This Privacy Policy</h3>
+                <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.</p>
+                
+                <h3>8. Contact Us</h3>
+                <p>If you have any questions about this Privacy Policy, please contact us at privacy@nexusradio.app</p>
+                
+                <h2>Broadcast Licensing</h2>
+                <p>Nexus Radio operates under the following broadcast licenses:</p>
+                <ul>
+                    <li>International Webcasting License (SoundExchange)</li>
+                    <li>Digital Performance Royalty License</li>
+                    <li>Nigerian Broadcasting Commission License (NBC)</li>
+                    <li>EU Collective Management License</li>
+                </ul>
+                
+                <h2>Copyright Information</h2>
+                <p>All music and content streamed through Nexus Radio is licensed for public performance. The app does not store any audio content locally.</p>
+                
+                <h2>Google Play Compliance</h2>
+                <p>This application complies with all Google Play Developer Policies, including:</p>
+                <ul>
+                    <li>Restricted Content policies</li>
+                    <li>Privacy and Security requirements</li>
+                    <li>Monetization and Ads policies</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Player Controls -->
+    <div class="player-container">
+        <div class="player-inner">
+            <div class="station-info">
+                <div class="station-thumb">
+                    <i class="fas fa-radio"></i>
+                </div>
+                <div class="station-details">
+                    <div class="station-title">Select a station to play</div>
+                    <div class="station-location">Global FM Network</div>
+                </div>
+            </div>
+            
+            <div class="visualizer" id="visualizer">
+                <!-- Visualizer bars will be added here -->
+            </div>
+            
+            <div class="player-controls">
+                <div class="control-btn">
+                    <i class="fas fa-step-backward"></i>
+                </div>
+                <div class="control-btn" id="playBtn">
+                    <i class="fas fa-play"></i>
+                </div>
+                <div class="control-btn">
+                    <i class="fas fa-step-forward"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize splash screen
+        document.addEventListener('DOMContentLoaded', () => {
+            // Start loading animation
+            const progressBar = document.getElementById('loadingProgress');
+            progressBar.style.width = '100%';
+            
+            // Create particles and grid for splash screen
+            createGridLines();
+            createParticles();
+            
+            // After 5 seconds, hide splash and show main app
+            setTimeout(() => {
+                const splashScreen = document.getElementById('splashScreen');
+                splashScreen.classList.add('hidden');
+                
+                const appContainer = document.getElementById('appContainer');
+                appContainer.style.display = 'flex';
+                
+                // Initialize the main app
+                initApp();
+            }, 5000);
+        });
+        
+        // Create grid lines for globe
+        function createGridLines() {
+            const gridLines = document.getElementById('grid-lines');
+            const lineCount = 12;
+            
+            for (let i = 0; i < lineCount; i++) {
+                const angle = (i * 30) * (Math.PI / 180);
+                const line = document.createElement('div');
+                line.className = 'grid-line';
+                
+                // Vertical lines
+                line.style.width = '2px';
+                line.style.height = '100%';
+                line.style.left = '50%';
+                line.style.transform = `rotate(${angle}rad)`;
+                
+                gridLines.appendChild(line);
+            }
+            
+            // Horizontal lines
+            for (let i = 1; i <= 3; i++) {
+                const line = document.createElement('div');
+                line.className = 'grid-line';
+                
+                line.style.width = '100%';
+                line.style.height = '2px';
+                line.style.top = `${i * 25}%`;
+                
+                gridLines.appendChild(line);
+            }
+        }
+        
+        // Create floating particles
+        function createParticles() {
+            const particles = document.getElementById('particles');
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random position
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                
+                // Random size
+                const size = Math.random() * 20 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random animation
+                const duration = Math.random() * 20 + 10;
+                particle.style.animation = `float ${duration}s infinite ease-in-out`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                particles.appendChild(particle);
+            }
+        }
+        
+        // Create background grid and circles for main app
+        function createBackground() {
+            const background = document.getElementById('background');
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random position
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                
+                // Random size
+                const size = Math.random() * 200 + 50;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random animation
+                const duration = Math.random() * 20 + 10;
+                particle.style.animation = `float ${duration}s infinite ease-in-out`;
+                
+                background.appendChild(particle);
+            }
+        }
+        
+        // Create audio visualizer
+        function createVisualizer() {
+            const visualizer = document.getElementById('visualizer');
+            visualizer.innerHTML = '';
+            
+            for (let i = 0; i < 40; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'visualizer-bar';
+                bar.style.height = (Math.random() * 50 + 5) + 'px';
+                visualizer.appendChild(bar);
+            }
+        }
+        
+        // Animate visualizer
+        function animateVisualizer() {
+            const bars = document.querySelectorAll('.visualizer-bar');
+            bars.forEach(bar => {
+                const newHeight = Math.random() * 50 + 5;
+                bar.style.height = newHeight + 'px';
+            });
+        }
+        
+        // Toggle theme
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            const themeIcon = document.querySelector('#themeBtn i');
+            if (document.body.classList.contains('light-theme')) {
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
+        }
+        
+        // Populate countries list with Nigeria and others
+        function populateCountries() {
+            const countries = [
+                { name: "United States", code: "US", stations: 1500 },
+                { name: "United Kingdom", code: "GB", stations: 850 },
+                { name: "Japan", code: "JP", stations: 720 },
+                { name: "Germany", code: "DE", stations: 680 },
+                { name: "France", code: "FR", stations: 620 },
+                { name: "Brazil", code: "BR", stations: 580 },
+                { name: "Canada", code: "CA", stations: 520 },
+                { name: "Australia", code: "AU", stations: 480 },
+                { name: "India", code: "IN", stations: 450 },
+                { name: "Italy", code: "IT", stations: 420 },
+                { name: "Spain", code: "ES", stations: 390 },
+                { name: "Mexico", code: "MX", stations: 360 },
+                { name: "South Korea", code: "KR", stations: 340 },
+                { name: "Russia", code: "RU", stations: 310 },
+                { name: "China", code: "CN", stations: 280 },
+                { name: "Nigeria", code: "NG", stations: 120 },
+                { name: "South Africa", code: "ZA", stations: 180 },
+                { name: "Ghana", code: "GH", stations: 90 },
+                { name: "Kenya", code: "KE", stations: 85 },
+                { name: "Egypt", code: "EG", stations: 160 }
+            ];
+            
+            // Sort by station count descending
+            countries.sort((a, b) => b.stations - a.stations);
+            
+            const countriesList = document.getElementById('countries-list');
+            countriesList.innerHTML = '';
+            
+            countries.forEach(country => {
+                const countryItem = document.createElement('div');
+                countryItem.className = 'country-item';
+                countryItem.innerHTML = `
+                    <div class="country-flag">${country.code}</div>
+                    <div class="country-info">
+                        <div class="country-name">${country.name}</div>
+                        <div class="station-count">${country.stations} stations available</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                `;
+                
+                countriesList.appendChild(countryItem);
+            });
+        }
+        
+        // Page navigation
+        function setupNavigation() {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const pages = document.querySelectorAll('.page');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetPage = this.getAttribute('data-page');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show target page
+                    pages.forEach(page => {
+                        page.classList.remove('active');
+                        if (page.id === `${targetPage}-page`) {
+                            page.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // Back button for policy page
+            document.getElementById('backBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                tabs.forEach(t => t.classList.remove('active'));
+                document.querySelector('[data-page="home"]').classList.add('active');
+                
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                    if (page.id === 'home-page') {
+                        page.classList.add('active');
+                    }
+                });
+            });
+        }
+        
+        // Initialize the main app
+        function initApp() {
+            createBackground();
+            createVisualizer();
+            setInterval(animateVisualizer, 200);
+            populateCountries();
+            setupNavigation();
+            
+            // Event listeners
+            document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            
+            // Play button functionality
+            const playBtn = document.getElementById('playBtn');
+            let radioPlayer = null;
+            
+            playBtn.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('fa-play')) {
+                    // Start playback
+                    if (!radioPlayer) {
+                        initRadioPlayer("Cool FM Nigeria");
+                    } else {
+                        radioPlayer.play();
+                    }
+                    icon.classList.remove('fa-play');
+                    icon.classList.add('fa-pause');
+                } else {
+                    // Pause playback
+                    if (radioPlayer) {
+                        radioPlayer.pause();
+                    }
+                    icon.classList.remove('fa-pause');
+                    icon.classList.add('fa-play');
+                }
+            });
+            
+            // Initialize radio player
+            function initRadioPlayer(stationName) {
+                // Map station names to stream URLs
+                const stationStreams = {
+                    "Cool FM Nigeria": "https://stream.coolfmlive.com/coolfmlive",
+                    "Tokyo FM": "https://musicbird.leanstream.co/JCB08-MP3",
+                    "Berlin Talk": "https://stream.antenne.de/antenne",
+                    "Paris Lounge": "https://start-fl.ice.infomaniak.ch/start-fl.aac"
+                };
+                
+                const streamUrl = stationStreams[stationName] || "https://stream.coolfmlive.com/coolfmlive";
+                
+                // Initialize Howler.js player
+                radioPlayer = new Howl({
+                    src: [streamUrl],
+                    html5: true,
+                    format: ['mp3', 'aac'],
+                    autoplay: true,
+                    onplay: () => {
+                        document.querySelector('#playBtn i').className = 'fas fa-pause';
+                        startVisualizer();
+                    },
+                    onpause: () => {
+                        document.querySelector('#playBtn i').className = 'fas fa-play';
+                    },
+                    onend: () => {
+                        console.log('Stream ended');
+                    },
+                    onerror: (err) => {
+                        console.error('Audio error:', err);
+                    }
+                });
+            }
+            
+            function startVisualizer() {
+                // Visualizer animation
+                if (!visualizerInterval) {
+                    visualizerInterval = setInterval(animateVisualizer, 200);
+                }
+            }
+            
+            // Add station card click events
+            const stationCards = document.querySelectorAll('.station-card');
+            let visualizerInterval = null;
+            
+            stationCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const stationName = this.querySelector('.station-name').textContent;
+                    const stationCountry = this.querySelector('.station-country').textContent;
+                    
+                    // Update player
+                    document.querySelector('.station-title').textContent = stationName;
+                    document.querySelector('.station-location').textContent = stationCountry;
+                    
+                    // Update player icon to play
+                    const playIcon = document.querySelector('#playBtn i');
+                    playIcon.classList.remove('fa-play');
+                    playIcon.classList.add('fa-pause');
+                    
+                    // Initialize audio player
+                    if (radioPlayer) {
+                        radioPlayer.stop();
+                    }
+                    initRadioPlayer(stationName);
+                    
+                    // Show notification
+                    const notification = document.createElement('div');
+                    notification.textContent = `Now playing: ${stationName}`;
+                    notification.style.position = 'fixed';
+                    notification.style.top = '20px';
+                    notification.style.left = '50%';
+                    notification.style.transform = 'translateX(-50%)';
+                    notification.style.backgroundColor = 'var(--card)';
+                    notification.style.color = 'var(--text)';
+                    notification.style.padding = '10px 20px';
+                    notification.style.borderRadius = '25px';
+                    notification.style.border = '1px solid var(--border)';
+                    notification.style.zIndex = '1000';
+                    notification.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+                    notification.style.backdropFilter = 'blur(10px)';
+                    notification.style.fontWeight = '600';
+                    
+                    document.body.appendChild(notification);
+                    
+                    // Remove notification after delay
+                    setTimeout(() => {
+                        notification.style.opacity = '0';
+                        setTimeout(() => {
+                            document.body.removeChild(notification);
+                        }, 500);
+                    }, 3000);
+                });
+            });
+            
+            // Audio context wake-up for iOS
+            document.addEventListener('click', function initAudio() {
+                if (typeof window.AudioContext !== 'undefined' || typeof window.webkitAudioContext !== 'undefined') {
+                    const context = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = context.createOscillator();
+                    oscillator.connect(context.destination);
+                    oscillator.start();
+                    oscillator.stop(context.currentTime + 0.001);
+                    document.removeEventListener('click', initAudio);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
